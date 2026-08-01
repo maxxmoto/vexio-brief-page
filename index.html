@@ -1,0 +1,398 @@
+<!DOCTYPE html><html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vexio 🟡 Интерактивный Бриф</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ya: {
+                            yellow: '#FCE000',
+                            dark: '#21201F',
+                            gray: '#F3F2EE',
+                            white: '#FFFFFF',
+                            green: '#2FA84F',
+                            red: '#F34444'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'sheet': '0 -8px 24px rgba(0,0,0,0.06)',
+                        'card': '0 4px 16px rgba(0,0,0,0.04)'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Темный фон страницы для ПК-версии */
+        body {
+            background-color: #111111;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+        /* Accordion Smooth Height Animation */
+        .sheet-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .sheet-content.open {
+            grid-template-rows: 1fr;
+        }
+        .sheet-inner {
+            overflow: hidden;
+        }
+        
+        input::placeholder {
+            color: #9CA3AF;
+        }
+
+
+        /* Контейнер-имитация телефона для ПК */
+        .app-container {
+            width: 100%;
+            max-width: 430px; /* Ширина как у iPhone Pro Max, примерно 1/3 экрана ПК */
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #F3F2EE;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+
+        const Icon = ({ name, size = 24, className = "", color = "currentColor" }) => {
+            useEffect(() => {
+                lucide.createIcons();
+            }, [name]);
+            return <i data-lucide={name} width={size} height={size} className={className} stroke={color}></i>;
+        };
+
+
+        const Sheet = ({ id, title, iconStr, isActive, onOpen, isFirst, children }) => {
+            return (
+                <section className={`
+                    rounded-t-[1.75rem] shadow-sheet relative transition-colors duration-300 overflow-hidden
+                    ${isActive ? 'bg-white z-30' : 'bg-ya-gray z-20 hover:bg-[#EBEAE5]'}
+                    ${isFirst ? '-mt-10' : '-mt-5'}
+                `}>
+                    <div 
+                        onClick={() => onOpen(id)}
+                        className="pt-3 pb-5 px-6 cursor-pointer relative"
+                    >
+                        <div className={`w-10 h-1.5 rounded-full mx-auto mb-4 transition-colors ${isActive ? 'bg-gray-200' : 'bg-gray-300'}`}></div>
+                        
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-[22px] font-black tracking-tight text-ya-dark">{title}</h2>
+                            <div className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors
+                                ${isActive ? 'border-gray-200 text-gray-400 bg-gray-50' : 'border-gray-300 text-gray-500 bg-white/50'}
+                            `}>
+                                {iconStr}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className={`sheet-content ${isActive ? 'open' : ''}`}>
+                        <div className="sheet-inner">
+                            {children}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+
+        const App = () => {
+            const [activeSheet, setActiveSheet] = useState('formats');
+
+
+            const [formData, setFormData] = useState({
+                format: '',
+                business: '',
+                goal: '',
+                contact: ''
+            });
+
+
+            // Иконка для бизнеса заменена на "monitor" (100% рабочая в Lucide)
+            const formatCards = [
+                { id: 'landing', title: 'Быстрый старт', desc: 'лендинг для запуска продаж за неделю', tag: 'new', icon: 'rocket', iconBg: 'bg-ya-yellow', iconColor: '#FCE000' },
+                { id: 'corporate', title: 'Для бизнеса', desc: 'многостраничный сайт вашей компании', icon: 'monitor', iconBg: 'bg-gray-200', iconColor: '#21201F' },
+                { id: 'store', title: 'Магазин', desc: 'полноценный каталог с онлайн-оплатой', icon: 'shopping-bag', iconBg: 'bg-green-100', iconColor: '#2FA84F' }
+            ];
+
+
+            const goals = ['Рост продаж', 'Сбор заявок', 'Имидж компании', 'Портфолио/Блог', 'Другое'];
+
+
+            const handleFormatSelect = (id) => {
+                setFormData(prev => ({ ...prev, format: id }));
+                setTimeout(() => setActiveSheet('brief'), 300);
+            };
+
+
+            const handleSubmit = () => {
+                console.log("Данные отправлены:", formData);
+                alert("Заявка сформирована! В реальности здесь данные улетят к вам в ТГ.");
+            };
+
+
+            return (
+                <div className="app-container text-ya-dark pb-32">
+                    
+                    {/* HERO SECTION */}
+                    <div className="bg-ya-dark text-white pt-6 pb-24 px-4 relative overflow-hidden">
+                        {/* Сюда вставляется ваша картинка для фона (в url) */}
+                        <div className="absolute inset-0 opacity-15 bg-[url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-ya-dark via-ya-dark/50 to-transparent"></div>
+                        
+                        <div className="relative z-10">
+                            <header className="flex justify-between items-center mb-8">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-full bg-ya-yellow flex items-center justify-center text-ya-dark font-black text-lg">
+                                        V
+                                    </div>
+                                    <span className="font-bold text-xl tracking-tight">VEXIO</span>
+                                </div>
+                                {/* Локация "Москва" удалена */}
+                            </header>
+
+
+                            <h1 className="text-4xl font-black leading-tight mb-2 tracking-tight">
+                                разработка<br/>вашего сайта
+                            </h1>
+                            <p className="text-gray-300 font-medium mt-3 max-w-xs text-sm">Ответьте на пару вопросов, и мы подготовим предложение</p>
+                        </div>
+                    </div>
+
+
+                    {/* STACKED SHEETS CONTAINER */}
+                    <main className="relative z-20">
+                        
+                        {/* SHEET 1: Formats */}
+                        <Sheet 
+                            id="formats" 
+                            title="выберите формат работы" 
+                            iconStr="1" 
+                            isFirst={true}
+                            isActive={activeSheet === 'formats'} 
+                            onOpen={setActiveSheet}
+                        >
+                            <div className="flex gap-4 overflow-x-auto hide-scrollbar px-6 pb-8 pt-2">
+                                {formatCards.map(card => (
+                                    <div 
+                                        key={card.id}
+                                        onClick={() => handleFormatSelect(card.id)}
+                                        className={`
+                                            cursor-pointer min-w-[220px] w-[220px] rounded-[24px] p-5 flex-shrink-0 relative transition-all duration-200
+                                            ${formData.format === card.id && activeSheet === 'formats' 
+                                                ? 'bg-[#FFFDF0] ring-2 ring-ya-yellow shadow-sm' 
+                                                : 'border border-gray-100 bg-white shadow-card'}
+                                        `}
+                                    >
+                                        {card.tag && (
+                                            <span className="absolute top-4 right-4 bg-ya-green text-white text-[10px] font-bold px-2 py-1 rounded-md z-10 uppercase tracking-wide">
+                                                {card.tag}
+                                            </span>
+                                        )}
+                                        <h3 className="font-bold text-lg mb-1 relative z-10">{card.title}</h3>
+                                        <p className="text-xs text-gray-500 mb-8 relative z-10 pr-2">{card.desc}</p>
+                                        
+                                        <div className="relative h-20 w-full mt-auto">
+                                            <div className={`absolute right-0 bottom-0 w-20 h-20 ${card.iconBg} rounded-full opacity-20 -mr-4 -mb-4`}></div>
+                                            <div className="absolute right-1 bottom-1 bg-ya-dark rounded-xl p-3 transform rotate-[-5deg] shadow-lg">
+                                                <Icon name={card.icon} size={28} color={card.iconColor} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </Sheet>
+
+
+                        {/* SHEET 2: Brief Form */}
+                        <Sheet 
+                            id="brief" 
+                            title="расскажите о проекте" 
+                            iconStr="2" 
+                            isActive={activeSheet === 'brief'} 
+                            onOpen={setActiveSheet}
+                        >
+                            <div className="px-6 pb-8 pt-2">
+                                
+                                <div className="mb-6">
+                                    <label className="block text-sm font-bold text-gray-800 mb-2">Какой у вас бизнес?</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Например: Студия йоги" 
+                                        value={formData.business}
+                                        onChange={(e) => setFormData({...formData, business: e.target.value})}
+                                        className="w-full bg-[#F5F4F2] border-2 border-transparent rounded-2xl px-4 py-4 outline-none focus:bg-white focus:border-ya-yellow transition-all font-medium text-ya-dark placeholder-gray-400"
+                                    />
+                                </div>
+
+
+                                <div className="mb-6">
+                                    <label className="block text-sm font-bold text-gray-800 mb-2">Главная задача сайта</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {goals.map(g => (
+                                            <button 
+                                                key={g}
+                                                onClick={() => setFormData({...formData, goal: g})}
+                                                className={`px-4 py-2.5 rounded-full font-bold text-sm transition-all border-2
+                                                    ${formData.goal === g 
+                                                        ? 'bg-ya-dark text-white border-ya-dark shadow-md' 
+                                                        : 'bg-transparent text-gray-600 border-gray-200 hover:border-gray-300'
+                                                    }`}
+                                            >
+                                                {g}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+
+                                <div className="mb-6">
+                                    <label className="block text-sm font-bold text-gray-800 mb-2">Как с вами связаться?</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <Icon name="phone" size={18} className="text-gray-400" />
+                                        </div>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Телефон или @telegram" 
+                                            value={formData.contact}
+                                            onChange={(e) => setFormData({...formData, contact: e.target.value})}
+                                            className="w-full bg-[#F5F4F2] border-2 border-transparent rounded-2xl pl-11 pr-4 py-4 outline-none focus:bg-white focus:border-ya-yellow transition-all font-medium text-ya-dark placeholder-gray-400"
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <button 
+                                    onClick={() => setActiveSheet('bonuses')}
+                                    className="w-full mt-2 bg-gray-100 hover:bg-gray-200 text-ya-dark font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors"
+                                >
+                                    Посмотреть бонусы <Icon name="arrow-down" size={18} />
+                                </button>
+                            </div>
+                        </Sheet>
+
+
+                        {/* SHEET 3: Bonuses */}
+                        <Sheet 
+                            id="bonuses" 
+                            title="ваши бонусы" 
+                            iconStr="3" 
+                            isActive={activeSheet === 'bonuses'} 
+                            onOpen={setActiveSheet}
+                        >
+                            <div className="pb-10">
+                                <div className="flex gap-4 overflow-x-auto hide-scrollbar px-6 pt-2 pb-6">
+                                    
+                                    {/* Bonus 1 */}
+                                    <div className="min-w-[160px] bg-[#FFF8E1] rounded-[24px] p-5 flex-shrink-0 relative border border-[#FFE082]/30">
+                                        <div className="absolute top-4 right-4 bg-[#FF5252] text-white font-black text-xs py-1.5 px-2.5 rounded-lg transform rotate-3 shadow-sm">
+                                            -50%
+                                        </div>
+                                        <div className="h-16 flex items-center mb-4">
+                                            <div className="w-12 h-12 bg-ya-yellow rounded-full flex items-center justify-center">
+                                                <Icon name="pen-tool" size={24} />
+                                            </div>
+                                        </div>
+                                        <p className="font-bold text-[15px] leading-tight">дизайн логотипа со скидкой</p>
+                                    </div>
+
+
+                                    {/* Bonus 2 (Изменен текст и иконка) */}
+                                    <div className="min-w-[160px] bg-[#FCE4EC] rounded-[24px] p-5 flex-shrink-0 relative border border-[#F48FB1]/30">
+                                        <div className="absolute top-4 right-4 bg-ya-dark text-white font-black text-xs py-1.5 px-2.5 rounded-lg transform -rotate-3 shadow-sm">
+                                            FREE
+                                        </div>
+                                        <div className="h-16 flex items-center mb-4">
+                                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                                <Icon name="headphones" size={24} color="#21201F" />
+                                            </div>
+                                        </div>
+                                        <p className="font-bold text-[15px] leading-tight">ведение месяц в подарок</p>
+                                    </div>
+                                    
+                                </div>
+                                
+                                <div className="px-6 mt-2">
+                                    <h2 className="text-2xl font-black tracking-tight mb-4 text-ya-dark">всё готово</h2>
+                                    <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100 relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-full h-1 bg-gray-200">
+                                            <div className="w-full h-full bg-ya-green"></div>
+                                        </div>
+                                        <h3 className="font-bold text-xl mb-2 flex items-center gap-2 mt-2">
+                                            Vexio <div className="w-5 h-5 bg-ya-yellow rounded-full inline-flex items-center justify-center"><Icon name="check" size={14} fill="#21201F" stroke="#21201F" /></div> Про
+                                        </h3>
+                                        <p className="text-gray-500 text-sm leading-relaxed">
+                                            Нажмите кнопку ниже. Мы получим заявку и свяжемся с вами в течение часа для обсуждения деталей.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Sheet>
+
+
+                    </main>
+
+
+                    {/* STICKY BOTTOM BAR */}
+                    {/* Теперь панель позиционируется абсолютно внутри контейнера */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md pb-8 pt-4 px-4 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.08)] z-[100] border-t border-gray-100">
+                        <div className="flex gap-4 items-center">
+                            <button 
+                                onClick={handleSubmit}
+                                className="flex-1 bg-ya-yellow hover:bg-[#F0D500] active:scale-[0.98] transition-all text-ya-dark font-black text-lg h-14 rounded-[20px] shadow-sm flex items-center justify-center gap-2"
+                            >
+                                отправить заявку <Icon name="arrow-right" size={20} />
+                            </button>
+                        </div>
+                    </div>
+                    
+                </div>
+            );
+        };
+
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
