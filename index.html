@@ -2,6 +2,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="запасной.png">
+    <link rel="apple-touch-icon" href="запасной.png">
     
     <!-- Primary Meta -->
     <title>Vexio — Разработка сайтов под ключ | Интерактивный бриф</title>
@@ -275,7 +277,7 @@
 
             const iconPresets = [
                 { icon: 'rocket', iconBg: 'bg-ya-yellow', iconColor: '#FCE000' },
-                { icon: 'laptop', iconBg: 'bg-gray-200', iconColor: '#21201F' },
+                { icon: 'laptop', iconBg: 'bg-gray-200', iconColor: '#FFFFFF' },
                 { icon: 'shopping-bag', iconBg: 'bg-green-100', iconColor: '#2FA84F' }
             ];
 
@@ -312,7 +314,7 @@
                                     <span className="cursor-pointer hover:text-white transition-colors" onClick={() => setActiveSheet('bonuses')}>{t.stage3}</span>
                                 </div>
                                 <button onClick={toggleLang} className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 transition-colors rounded-full px-3 py-1.5 text-xs font-bold flex-shrink-0">
-                                    <span>{String.fromCodePoint(lang === 'ru' ? 0x1F1F7 : 0x1F1FA)}{String.fromCodePoint(lang === 'ru' ? 0x1F1FA : 0x1F1F8)}</span>
+                                    <img src={lang === 'ru' ? 'russia_8603510.png' : 'united-kingdom_5975843.png'} alt="flag" className="w-4 h-4 rounded-sm object-cover" />
                                     <span>{t.langLabel}</span>
                                 </button>
                             </header>
