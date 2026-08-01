@@ -587,6 +587,8 @@
                 goalLabel: 'Главная задача сайта',
                 contactLabel: 'Как с вами связаться?',
                 contactPh: 'Телефон или @telegram',
+                websiteLabel: 'Уже есть сайт? Прикрепите ссылку (необязательно)',
+                websitePh: 'https://...',
                 viewBonuses: 'Посмотреть бонусы',
                 bonus1: 'дизайн логотипа со скидкой',
                 bonus2: 'ведение месяц в подарок',
@@ -621,6 +623,8 @@
                 goalLabel: 'Main goal of the website',
                 contactLabel: 'How to contact you?',
                 contactPh: 'Phone or @telegram',
+                websiteLabel: 'Already have a website? Attach link (optional)',
+                websitePh: 'https://...',
                 viewBonuses: 'View bonuses',
                 bonus1: 'logo design with discount',
                 bonus2: 'one month maintenance free',
@@ -689,7 +693,8 @@
                 format: '',
                 business: '',
                 goal: '',
-                contact: ''
+                contact: '',
+                website: ''
             });
 
             const iconPresets = [
@@ -837,6 +842,22 @@
                                             placeholder={t.contactPh}
                                             value={formData.contact}
                                             onChange={(e) => setFormData({...formData, contact: e.target.value})}
+                                            className="w-full bg-[#F5F4F2] border-2 border-transparent rounded-2xl pl-11 pr-4 py-4 outline-none focus:bg-white focus:border-ya-yellow transition-all font-medium text-ya-dark placeholder-gray-400"
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div className="mb-6">
+                                    <label className="block text-sm font-bold text-gray-800 mb-2">{t.websiteLabel}</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <Icon name="link" size={18} className="text-gray-400" />
+                                        </div>
+                                        <input 
+                                            type="text" 
+                                            placeholder={t.websitePh}
+                                            value={formData.website}
+                                            onChange={(e) => setFormData({...formData, website: e.target.value})}
                                             className="w-full bg-[#F5F4F2] border-2 border-transparent rounded-2xl pl-11 pr-4 py-4 outline-none focus:bg-white focus:border-ya-yellow transition-all font-medium text-ya-dark placeholder-gray-400"
                                         />
                                     </div>
