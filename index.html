@@ -410,6 +410,14 @@
             color: #9CA3AF;
         }
 
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-pop {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
         .app-container {
             width: 100%;
             max-width: 430px;
@@ -466,6 +474,9 @@
                 submitBtn: 'отправить заявку',
                 footer: 'создано с помощью',
                 alert: 'Заявка сформирована! В реальности здесь данные улетят к вам в ТГ.',
+                modalTitle: 'Заявка отправлена!',
+                modalText: 'Спасибо! Мы получили ваш бриф. Менеджер свяжется с вами в течение часа для уточнения деталей и подготовки предложения.',
+                modalClose: 'Понятно',
                 stage1: 'Формат',
                 stage2: 'Бриф',
                 stage3: 'Бонусы',
@@ -497,6 +508,9 @@
                 submitBtn: 'submit application',
                 footer: 'created with',
                 alert: 'Application submitted! In reality, the data would be sent to your Telegram.',
+                modalTitle: 'Application sent!',
+                modalText: 'Thank you! We\'ve received your brief. A manager will contact you within an hour to clarify details and prepare a proposal.',
+                modalClose: 'Got it',
                 stage1: 'Format',
                 stage2: 'Brief',
                 stage3: 'Bonuses',
@@ -547,6 +561,7 @@
         const App = () => {
             const [activeSheet, setActiveSheet] = useState('formats');
             const [lang, setLang] = useState('ru');
+            const [submitted, setSubmitted] = useState(false);
             const t = translations[lang];
 
             const [formData, setFormData] = useState({
@@ -569,7 +584,7 @@
 
             const handleSubmit = () => {
                 console.log("Data:", formData);
-                alert(t.alert);
+                setSubmitted(true);
             };
 
             const toggleLang = () => setLang(lang === 'ru' ? 'en' : 'ru');
@@ -800,6 +815,24 @@
                             </a>
                         </div>
                     </footer>
+                    
+                    {submitted && (
+                        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSubmitted(false)}>
+                            <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl modal-pop" onClick={e => e.stopPropagation()}>
+                                <div className="w-16 h-16 bg-ya-green rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Icon name="check" size={32} color="#FFFFFF" />
+                                </div>
+                                <h3 className="text-xl font-black text-ya-dark mb-2">{t.modalTitle}</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-6">{t.modalText}</p>
+                                <button 
+                                    onClick={() => setSubmitted(false)}
+                                    className="w-full bg-ya-yellow hover:bg-[#F0D500] transition-all text-ya-dark font-bold py-3 rounded-xl"
+                                >
+                                    {t.modalClose}
+                                </button>
+                            </div>
+                        </div>
+                    )}
                     
                 </div>
             );
